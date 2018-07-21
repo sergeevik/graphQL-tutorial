@@ -7,13 +7,19 @@ import com.graphql.tutorial.repo.LinkRepository;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.SimpleGraphQLServlet;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @WebServlet(urlPatterns = "/graphql")
-public class GraphQLEndpoint extends SimpleGraphQLServlet {
+public class GraphQLEndpoint extends HttpServlet {
+    private SimpleGraphQLServlet graph;
 
     public GraphQLEndpoint() {
-        super(buildSchema());
+        graph = SimpleGraphQLServlet.builder(buildSchema()).build();
     }
 
     private static GraphQLSchema buildSchema() {
@@ -23,5 +29,10 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
                 .resolvers(new Query(linkRepository), new Mutation(linkRepository))
                 .build()
                 .makeExecutableSchema();
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        graph.service(req, resp);
     }
 }

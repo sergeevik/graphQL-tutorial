@@ -1,11 +1,11 @@
 package com.graphql.tutorial.dto;
 
-import com.coxautodev.graphql.tools.GraphQLRootResolver;
 import com.graphql.tutorial.repo.LinkRepository;
+import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 
 import java.util.List;
 
-public class Query implements GraphQLRootResolver {
+public class Query implements GraphQLQueryResolver {
 
     private final LinkRepository linkRepository;
 
