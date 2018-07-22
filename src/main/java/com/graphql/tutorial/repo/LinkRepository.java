@@ -32,7 +32,9 @@ public class LinkRepository {
 
     public void saveLink(Link link) {
         Document doc = new Document();
-        doc.append("_id", link.getId());
+        if (link.getId() != null) {
+            doc.append("_id", link.getId());
+        }
         doc.append("url", link.getUrl());
         doc.append("description", link.getDescription());
         links.insertOne(doc);
