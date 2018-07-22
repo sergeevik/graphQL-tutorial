@@ -1,29 +1,34 @@
 package com.graphql.tutorial;
 
 import com.coxautodev.graphql.tools.SchemaParser;
+import com.graphql.tutorial.dto.GraphQlQuery;
 import com.graphql.tutorial.dto.Mutation;
 import com.graphql.tutorial.dto.Query;
 import com.graphql.tutorial.repo.LinkRepository;
+import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
-import graphql.servlet.SimpleGraphQLServlet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.Map;
 
-@WebServlet(urlPatterns = "/graphql")
+@RequestMapping("/graphql")
+@RestController
 public class GraphQLEndpoint extends HttpServlet {
-    private SimpleGraphQLServlet graph;
+    private final LinkRepository linkRepository;
+    private GraphQL graph;
 
-    public GraphQLEndpoint() {
-        graph = SimpleGraphQLServlet.builder(buildSchema()).build();
+    @Autowired
+    public GraphQLEndpoint(LinkRepository linkRepository) {
+        this.linkRepository = linkRepository;
+        graph = GraphQL.newGraphQL(buildSchema()).build();
     }
 
-    private static GraphQLSchema buildSchema() {
-        LinkRepository linkRepository = new LinkRepository();
+    private GraphQLSchema buildSchema() {
         return SchemaParser.newParser()
                 .file("schema.graphqls")
                 .resolvers(new Query(linkRepository), new Mutation(linkRepository))
@@ -31,8 +36,8 @@ public class GraphQLEndpoint extends HttpServlet {
                 .makeExecutableSchema();
     }
 
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        graph.service(req, resp);
+    @PostMapping
+    public Map<String, Object> doPost(@RequestBody GraphQlQuery query) {
+        return graph.execute(query.getQuery()).toSpecification();
     }
 }

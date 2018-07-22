@@ -1,10 +1,12 @@
 package com.graphql.tutorial.repo;
 
 import com.graphql.tutorial.dto.Link;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class LinkRepository {
 
     private final List<Link> links;
