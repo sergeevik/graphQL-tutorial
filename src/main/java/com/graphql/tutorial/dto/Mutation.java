@@ -11,8 +11,8 @@ public class Mutation implements GraphQLRootResolver {
         this.linkRepository = linkRepository;
     }
 
-    public Link createLink(String url, String description) {
-        Link newLink = new Link(url, description);
+    public Link createLink(String id, String url, String description) {
+        Link newLink = new Link(id, url, description);
         linkRepository.saveLink(newLink);
         return newLink;
     }
