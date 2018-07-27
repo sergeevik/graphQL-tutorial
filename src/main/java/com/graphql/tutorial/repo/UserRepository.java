@@ -5,6 +5,9 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.mongodb.client.model.Filters.eq;
 
 public class UserRepository {
@@ -47,5 +50,13 @@ public class UserRepository {
                 doc.getString("name"),
                 doc.getString("email"),
                 doc.getString("password"));
+    }
+
+    public List<User> getAll() {
+        List<User> userList = new ArrayList<>();
+        for (Document doc : users.find()) {
+            userList.add(user(doc));
+        }
+        return userList;
     }
 }

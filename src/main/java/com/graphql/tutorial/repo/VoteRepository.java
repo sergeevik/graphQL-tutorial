@@ -57,4 +57,12 @@ public class VoteRepository {
                 doc.getString("linkId")
         );
     }
+
+    public List<Vote> getAll() {
+        List<Vote> voteList = new ArrayList<>();
+        for (Document doc : votes.find()){
+            voteList.add(vote(doc));
+        }
+        return voteList;
+    }
 }
