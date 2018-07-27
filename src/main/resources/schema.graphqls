@@ -33,6 +33,8 @@ scalar DateTime
 
 type Query {
     allLinks: [Link]
+    allVotes: [Vote]
+    allUsers: [User]
 }
 
 type Mutation {

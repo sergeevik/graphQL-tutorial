@@ -3,6 +3,7 @@ package com.graphql.tutorial.repo;
 import com.graphql.tutorial.dto.Vote;
 import com.graphql.tutorial.util.Scalars;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Collation;
 import org.bson.Document;
 
 import java.time.ZonedDateTime;
@@ -55,5 +56,13 @@ public class VoteRepository {
                 doc.getString("userId"),
                 doc.getString("linkId")
         );
+    }
+
+    public List<Vote> getAll() {
+        List<Vote> voteList = new ArrayList<>();
+        for (Document doc : votes.find()){
+            voteList.add(vote(doc));
+        }
+        return voteList;
     }
 }
