@@ -1,6 +1,7 @@
-package com.graphql.tutorial.dto;
+package com.graphql.tutorial.resolver;
 
 import com.coxautodev.graphql.tools.GraphQLRootResolver;
+import com.graphql.tutorial.dto.Link;
 import com.graphql.tutorial.repo.LinkRepository;
 
 import java.util.List;

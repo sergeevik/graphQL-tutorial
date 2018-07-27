@@ -17,6 +17,7 @@ public class LinkRepository {
     public LinkRepository(MongoCollection<Document> links) {
         this.links = links;
     }
+
     public Link findById(String id) {
         Document doc = links.find(eq("_id", new ObjectId(id))).first();
         return link(doc);
@@ -37,6 +38,7 @@ public class LinkRepository {
         }
         doc.append("url", link.getUrl());
         doc.append("description", link.getDescription());
+        doc.append("postedBy", link.getUserId());
         links.insertOne(doc);
     }
 
@@ -44,6 +46,7 @@ public class LinkRepository {
         return new Link(
                 doc.get("_id").toString(),
                 doc.getString("url"),
-                doc.getString("description"));
+                doc.getString("description"),
+                doc.getString("postedBy"));
     }
 }
