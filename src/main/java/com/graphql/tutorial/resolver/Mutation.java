@@ -2,23 +2,27 @@ package com.graphql.tutorial.resolver;
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.graphql.tutorial.AuthContext;
-import com.graphql.tutorial.dto.AuthData;
-import com.graphql.tutorial.dto.Link;
-import com.graphql.tutorial.dto.SigninPayload;
-import com.graphql.tutorial.dto.User;
+import com.graphql.tutorial.dto.*;
 import com.graphql.tutorial.repo.LinkRepository;
 import com.graphql.tutorial.repo.UserRepository;
+import com.graphql.tutorial.repo.VoteRepository;
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 public class Mutation implements GraphQLMutationResolver {
 
     private final LinkRepository linkRepository;
     private final UserRepository userRepository;
+    private final VoteRepository voteRepository;
 
-    public Mutation(LinkRepository linkRepository, UserRepository userRepository) {
+    public Mutation(LinkRepository linkRepository, UserRepository userRepository, VoteRepository voteRepository) {
         this.linkRepository = linkRepository;
         this.userRepository =  userRepository;
+        this.voteRepository = voteRepository;
     }
 
     public Link createLink(String url, String description, DataFetchingEnvironment env) {
@@ -39,5 +43,10 @@ public class Mutation implements GraphQLMutationResolver {
             return new SigninPayload(user.getId(), user);
         }
         throw new GraphQLException("invalid credentials");
+    }
+
+    public Vote createVote(String linkId, String userId) {
+        ZonedDateTime now = Instant.now().atZone(ZoneOffset.UTC);
+        return voteRepository.saveVote(new Vote(now, userId, linkId));
     }
 }

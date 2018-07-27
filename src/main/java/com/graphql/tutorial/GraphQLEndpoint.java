@@ -2,11 +2,10 @@ package com.graphql.tutorial;
 
 import com.coxautodev.graphql.tools.SchemaParser;
 import com.graphql.tutorial.repo.UserRepository;
-import com.graphql.tutorial.resolver.LinkResolver;
-import com.graphql.tutorial.resolver.Mutation;
-import com.graphql.tutorial.resolver.Query;
+import com.graphql.tutorial.repo.VoteRepository;
+import com.graphql.tutorial.resolver.*;
 import com.graphql.tutorial.repo.LinkRepository;
-import com.graphql.tutorial.resolver.SigninResolver;
+import com.graphql.tutorial.util.Scalars;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import graphql.schema.GraphQLSchema;
@@ -24,11 +23,13 @@ public class GraphQLEndpoint extends HttpServlet {
     private SimpleGraphQLServlet graph;
     private static LinkRepository linkRepository;
     private static UserRepository userRepository;
+    private static VoteRepository voteRepository;
 
     static {
         MongoDatabase db = new MongoClient().getDatabase("graphql");
         linkRepository = new LinkRepository(db.getCollection("links"));
         userRepository = new UserRepository(db.getCollection("users"));
+        voteRepository = new VoteRepository(db.getCollection("votes"));
     }
 
     public GraphQLEndpoint() {
@@ -43,9 +44,12 @@ public class GraphQLEndpoint extends HttpServlet {
                 .file("schema.graphqls")
                 .resolvers(
                         new Query(linkRepository),
-                        new Mutation(linkRepository, userRepository),
+                        new Mutation(linkRepository, userRepository, voteRepository),
                         new SigninResolver(),
-                        new LinkResolver(userRepository))
+                        new LinkResolver(userRepository),
+                        new VoteResolver(linkRepository, userRepository)
+                )
+                .scalars(Scalars.dateTime)
                 .build()
                 .makeExecutableSchema();
     }
